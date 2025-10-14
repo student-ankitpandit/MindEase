@@ -1,15 +1,11 @@
 import express, { Router } from "express"
 import z from "zod"
 import prisma from "../lib/prisma"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { model } from "../config/geminiConfig"
 import { authMiddleware } from "../auth-middleware"
 
 
-
 const router = Router()
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!) //or as string
-const model = genAI.getGenerativeModel({model: "gemini-1.5-flash"})
 
 router.post("/moodStatus", authMiddleware, async (req, res) => {
     try {
@@ -55,7 +51,7 @@ router.post("/moodStatus", authMiddleware, async (req, res) => {
 
             moodResult = JSON.parse(cleanedText) //coz what if the response is not in JSON type in that case we have parse into JSON explicitly
         } catch (e) {
-            console.log(e)
+            console.log("Failed to parse AI response  : ",e)
             return res
             .status(500)
             .json({success: false, message: "Failed to parse AI response"})

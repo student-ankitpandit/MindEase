@@ -1,10 +1,17 @@
 import { Router } from 'express';
-import z  from 'zod';
+import z, { email, success } from 'zod';
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken"
 import { prisma } from '../lib/prisma';
+// import { sendEmail } from "../lib/resend";
+import { TOTP } from 'totp-generator';
+import base32 from 'hi-base32';
+import { authMiddleware } from '../auth-middleware';
+
+
 
 const router = Router();
+
 
 router.post("/signup", async (req, res) => {
     try {
@@ -21,7 +28,7 @@ router.post("/signup", async (req, res) => {
         }
 
         const {username, email, password} = result.data;
-        console.log(result.data);
+        // console.log(result.data);
 
         const existingUser = await prisma.user.findUnique({
             where: {email}
@@ -44,16 +51,41 @@ router.post("/signup", async (req, res) => {
             }
         })
 
+        //have to covert this into base32 strings here
+        // console.log(user)
+        // const {otp, expires} = await TOTP.generate(base32.encode(user.email))
+        // const generatedOtp = process.env.NODE_ENV === "development" ? "12345" : otp
+
+        // console.log("Node env ", process.env.NODE_ENV)
+        // console.log(`Log into ymk-app, ${generatedOtp}`)
+        
+        // sendEmail(user.email, "Your ymw-app sign-in code", `Your youth-mental-wellness app sign-in code is ${generatedOtp}`)
+        
+
         return res
         .status(201)
-        .json({success: true, message: "User created successfully"})
+        .json({success: true, message: "Account created successfully", user: {id: user.id, email: user.email, username: user.username}})
     } catch (e) {
-        console.log("Error in signing you up: ", e);
+        console.log("Error: ", e);
         return res
         .status(500)
         .json({success: false, message: "Something went wrong while creating your account"})
     }
 })
+
+// router.post("/verify-otp", async(req, res) => {
+//     const {email, userEnteredOtp} = req.body
+
+//     //have to covert this into base32 strings here  
+//     const {otp} = await TOTP.generate(base32.encode(email))
+//     const generatedOtp = process.env.NODE_ENV === "development" ? "12345" : otp
+    
+//     if(generatedOtp !== userEnteredOtp) {
+//         return res.status(400).json({message: "Invalid Otp", success: false})
+//     }
+
+//     return res.status(200).json({message: "Otp verified successfully", success: true})
+// })
 
 router.post("/login", async (req, res) => {
     try {
@@ -99,5 +131,28 @@ router.post("/login", async (req, res) => {
         return res.status(500).json({success: false, message: "Something went wrong while signing you in"})
     }
 })
+
+router.get("/me", authMiddleware, async (req, res) => {
+    const userId = req.userId
+
+    const user = await prisma.user.findUnique({ where: { id: userId } })
+
+    if(!user) {
+        res.status(401).send({
+            success: false, 
+            message: "Unauthorized"
+        }); 
+        return
+    }
+
+    res.json({
+        user: {
+            id: user?.id,
+            email: user?.email
+        }
+    })
+
+})
+
 
 export default router

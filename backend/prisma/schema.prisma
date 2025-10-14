@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
+  output   = "./generated/prisma"
 }
 
 datasource db {
@@ -15,68 +15,92 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  username  String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  messages Message[]
-  chatSessions ChatSession[]
-  moods Mood[]
+  id         String      @id @default(cuid())
+  email      String      @unique
+  username   String
+  password   String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  moods      Mood[]
+  executions Execution[]
+  journalings Journaling[]
 }
 
-model Dashboard {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  journaling Journaling[]
+// model Dashboard {
+//   id          String       @id @default(cuid())
+//   name        String
+//   description String
+//   createdAt   DateTime     @default(now())
+//   updatedAt   DateTime     @updatedAt
+//   journaling  Journaling[]
+// }
+
+enum MoodType {
+  HAPPY
+  SAD
+  ANXIOUS
+  EXCITED
+  ANGRY
+  CALM
+  STRESSED
+  NEUTRAL
+  GRATEFUL
+  LONELY
 }
 
 model Journaling {
-  id String @id @default(cuid())
-  title String
-  content String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  dashboardId String
-  dashboard Dashboard @relation(fields: [dashboardId], references: [id])
-}
-
-model Chat {
-  id String @id @default(cuid())
-  content String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  chatSessionId String
-  chatSession ChatSession @relation(fields: [chatSessionId], references: [id])
-  chats Message[]
-}
-
-model ChatSession {
-  id String @id @default(cuid())
-  messages Chat[]
+  id          String    @id @default(cuid())
+  title       String?
+  content     String @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   userId String
   user User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  moodType MoodType?
+  moodScore Int? @db.SmallInt
+  tags String[] @default([])
+
+  // dashboardId String
+  // dashboard   Dashboard @relation(fields: [dashboardId], references: [id])
+
+  @@index([userId, createdAt])
+}
+
+model Execution {
+  id         String   @id @default(cuid())
+  title      String
+  type       String   @default("CONVERSATION")
+  chatId     String? 
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  externalId String? //linked to the conversation.id 
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  title     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
 }
 
 model Message {
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  chats String
-  message Chat @relation(fields: [chats], references: [id])
+  id             String       @id @default(cuid())
+  content        String
+  role           String
+  createdAt      DateTime     @default(now())
+  updateAt       DateTime     @updatedAt
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
 }
 
 model Mood {
-  id String @id @default(cuid())
-  userId String
-  text String
-  moodType String
+  id        String   @id @default(cuid())
+  userId    String
+  text      String
+  moodType  String
   createdAt DateTime @default(now())
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }

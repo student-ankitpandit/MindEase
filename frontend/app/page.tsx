@@ -14,14 +14,14 @@ export default function Home() {
       fetch(`${BACKEND_URL}/signup`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json" 
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           email,
-          password 
+          password
         })
       })
-  }, [])
+  })
 
   return <h1>Hello, NextJs</h1>
 }
