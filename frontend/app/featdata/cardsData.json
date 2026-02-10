@@ -1,0 +1,46 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "title": "Culturally-Aware Empathetic Conversational AI",
+      "slug": "culturally-aware-empathetic-conversational-ai",
+      "description": "Multi-lingual support (Hindi, English, Hinglish, regional languages) with code-switching capability and context-aware responses that understand indian family dynamics, academic pressure, and cultural nuances. Emotion detection through sentiment analysis to adapt conversation tone in real-time",
+      "isFeatured": true
+    },
+    {
+      "id": 2,
+      "title": "Writing Journals",
+      "slug": "writing-journals",
+      "description": "Share your thoughts through writing journals. As much you write and express your feeling through writing, It'll eventually work in the sense of improving your mental health issues.",
+      "isFeatured": true
+    },
+    {
+      "id": 3,
+      "title": "Voice & Text Multi-Modal Interface",
+      "slug": "voice-&-text-multi-modal-interface",
+      "description": "Voice-based interaction for users with literacy barriers or privacy needs & text summarization of long conversations for quick review. Offline-capable chatbot with syncing when connected.",
+      "isFeatured": true
+    },
+    {
+      "id": 4,
+      "title": "Personalized Coping Strategy Recommendations",
+      "slug": "personalized-coping-strategy-recommendations",
+      "description": "AI-generated, evidence-based coping mechanisms tailored to individual situations and integration of indian practices (breathing exercises, mindfulness inspired by yoga/meditation). Progressive difficulty levels that adapt based on user progress and feedback.",
+      "isFeatured": true
+    },
+    {
+      "id": 5,
+      "title": "Peer Stories Matching & Anonymous Community",
+      "slug": "peer-stories-&-anonymous-community",
+      "description": "AI-powered matching of anonymized success stories relevant to user's situation and safe, moderated peer support groups with AI-assisted content moderation.",
+      "isFeatured": true
+    },
+    {
+      "id": 6,
+      "title": "Privacy-Preserving AI Architecture",
+      "slug": "privacy-preserving-ai-architecture",
+      "description": "End-to-end encryption for all conversations.",
+      "isFeatured": true
+    }
+  ]
+}

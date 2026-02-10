@@ -4,9 +4,10 @@ import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken"
 import { prisma } from '../lib/prisma';
 // import { sendEmail } from "../lib/resend";
-import { TOTP } from 'totp-generator';
-import base32 from 'hi-base32';
+// import { TOTP } from 'totp-generator';
+// import base32 from 'hi-base32';
 import { authMiddleware } from '../auth-middleware';
+import app from './index';
 
 
 
@@ -16,19 +17,19 @@ const router = Router();
 router.post("/signup", async (req, res) => {
     try {
         const signupSchema =  z.object({
-            username: z.string().min(3, "Username must be at least 3 characters"),
-            email: z.email(),
+            name: z.string().min(3, "Name must be at least 3 characters").optional(),
+            email: z.email("Invalid email address"),
             password: z.string().min(6, "Password must be at least 6 characters")
         })
 
         const result = signupSchema.safeParse(req.body)
         if(!result.success) {
-            console.log("Validation: ", result.error.issues)
+            console.log("Validation error: ", result.error.issues)
             return res.status(400).json({success: false, errors: result.error.issues})
         }
 
-        const {username, email, password} = result.data;
-        // console.log(result.data);
+        const {name, email, password} = result.data;
+        console.log(result.data);
 
         const existingUser = await prisma.user.findUnique({
             where: {email}
@@ -45,9 +46,10 @@ router.post("/signup", async (req, res) => {
         //saving user to db
         const user = await prisma.user.create({
             data: {
-                username,
-                email,
-                password: hashPassword
+                name: name || "",
+                email: email,
+                password: hashPassword,
+                googleId: ""
             }
         })
 
@@ -64,7 +66,7 @@ router.post("/signup", async (req, res) => {
 
         return res
         .status(201)
-        .json({success: true, message: "Account created successfully", user: {id: user.id, email: user.email, username: user.username}})
+        .json({success: true, message: "Account created successfully", user: {id: user.id, email: user.email, }})
     } catch (e) {
         console.log("Error: ", e);
         return res
@@ -88,20 +90,31 @@ router.post("/signup", async (req, res) => {
 // })
 
 router.post("/login", async (req, res) => {
+
     try {
         const loginSchema = z.object({
             email: z.email("Invalid email address"),
             password: z.string().min(6, "Password must be at least 6 characters")
         })
 
+
         const result = loginSchema.safeParse(req.body)
+        console.log(req.body)
+
         if(!result.success) {
-            return res.status(400).json({success: false, errors: result.error.issues})
+            return res
+                .status(400)
+                .json({
+                    success: false, 
+                    errors: result.error.issues
+                })
         }
+        
 
         const {email, password} = result.data
         console.log(result.data);
 
+        
         //find the user in db
         const user = await prisma.user.findUnique({ where: {email} })
 
@@ -123,13 +136,41 @@ router.post("/login", async (req, res) => {
         const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET!)
 
         return res
-        .status(200)
-        .json({success: true, message: "User logged in successfully", token: token, user: {id: user.id, email: user.email, pass: user.password}})
+            .status(200)
+            .setHeader("Set-Cookie", `token=${token}; HttpOnly; Path=/; SameSite=Lax`)
+            .json({
+                success: true, 
+                message: "User logged in successfully", 
+                token: token, user: {id: user.id, email: user.email, pass: user.password}})
         
     } catch (e) {
         console.log("Error: ", e)
         return res.status(500).json({success: false, message: "Something went wrong while signing you in"})
     }
+})
+
+router.post("/logout", async(req, res) => {
+    // Invalidate the token on client side by deleting it
+
+    try {
+        // Clear the cookie by name and provide cookie options instead of a raw header string
+        //res.clearCookie("token", { httpOnly: true, path: "/", sameSite: "lax", maxAge: 0 })
+
+        // res.setHeader("Set-Cookie", "token=; HttpOnly; Path=/; SameSite=Lax Max-Age=0");
+
+        // const cookies = [
+        //     "token=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0",
+        //     "next-auth.session-token=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0"
+        // ];
+
+        res.setHeader("Set-Cookie", "token=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0",);
+
+        return res.status(200).json({ success: true, message: "Logged out successfully." });
+    } catch (error) {
+        console.log("Error clearing cookie: ", error);
+        return res.status(500).json({ success: false, message: "Could not log out. Please try again." });
+    }
+
 })
 
 router.get("/me", authMiddleware, async (req, res) => {

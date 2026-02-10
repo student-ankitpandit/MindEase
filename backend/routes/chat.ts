@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid"
 
 const router = Router()
 
-router.post("/chat", authMiddleware, async (req, res) => {
+router.post("/chat", async (req, res) => {
     try {
         const chatSchema = z.object({
             question: z.string().min(1, { message: "Question cannot be empty." }),
@@ -33,7 +33,7 @@ router.post("/chat", authMiddleware, async (req, res) => {
 
         //console.log(question)
 
-        const prompt = `You are a supportive assistant helping youth manage everyday stress related to academics, career, and personal growth.
+        const prompt = `You are a supportive ai assistant helping youth manage everyday stress related to academics, career, relationship, and personal growth.
 
         USER QUESTION: ${question}
 

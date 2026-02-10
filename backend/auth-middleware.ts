@@ -11,6 +11,7 @@ interface customJWTPayload extends JwtPayload {
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authToken = req.headers.authorization?.split(' ')[1];
+    
 
     if(!authToken) {
         res.status(403).send({

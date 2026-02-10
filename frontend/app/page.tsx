@@ -1,27 +1,22 @@
 "use client"
+import HomeSection from "@/components/HomeSection"
+import FeathuredSection from "@/components/FeaturedSection"
+// import JournalingSection from "@/components/JournalingSection"
+import Faq from "@/components/Faq"
+import Footer from "@/components/Footer"
 
-import { useEffect, useState } from "react"
+export default function HomePage() {
 
-const BACKEND_URL = "https://localhost:8000"
-
-
-export default function Home() {
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
-    useEffect(() => {
-      fetch(`${BACKEND_URL}/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email,
-          password
-        })
-      })
-  })
-
-  return <h1>Hello, NextJs</h1>
+  return (
+    <>
+    {/* // <main className="min-h-screen bg-black/[0.90] antialiased bg-grid-white/[0.02]"> */}
+    {/* //   <div className="h-screen w-full flex items-center justify-center scroll-auto text-white">Hello, Welcome to StayRelaxed.</div> */}
+        <HomeSection />
+        <FeathuredSection />
+        {/* <JournalingSection /> */}
+        <Faq />
+        <Footer />
+    </>
+    // </main>
+  )
 }

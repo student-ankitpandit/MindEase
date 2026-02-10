@@ -5,3 +5,15 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// // next.config.ts
+//     module.exports = {
+//       async rewrites() {
+//         return [
+//           {
+//             source: '/auth/signup', // Requests to /api/* will be proxied
+//             destination: 'https://localhost:8000/auth/signup', // The actual API endpoint
+//           },
+//         ];
+//       },
+//     };
