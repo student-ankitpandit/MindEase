@@ -1,19 +1,18 @@
 import express, { Router } from "express"
 import { authMiddleware } from "../auth-middleware"
-import { success, z } from "zod"
-import { model } from "../config/geminiConfig"
+import { z, cuid } from "zod"
+import { model, genAI } from "../config/geminiConfig"
 import prisma from "../lib/prisma"
 import { v4 as uuidv4 } from "uuid"
 
 
-
 const router = Router()
 
-router.post("/chat", async (req, res) => {
+router.post("/chat", authMiddleware, async (req, res) => {
     try {
         const chatSchema = z.object({
             question: z.string().min(1, { message: "Question cannot be empty." }),
-            userId: z.string()
+            
         })
 
         const parsedRes = chatSchema.safeParse(req.body)
@@ -22,14 +21,15 @@ router.post("/chat", async (req, res) => {
         if(!parsedRes.success) {
             console.log("Validation Error: ", parsedRes.error.issues)
             res.status(400).json({success: false, message: "Please provide the valid input"})
+            return
         }
 
-        const { question } = req.body
-        const { userId } = req.body
+        const { question } = parsedRes.data 
+        const userId = req.userId
 
-        if(!question || question.trim().length == 0) {
-            return res.status(400).json({message: "Question cannot be empty", success: false})
-        }
+        // if(!question || question.trim().length == 0) {
+        //     return res.status(400).json({message: "Question cannot be empty", success: false})
+        // }
 
         //console.log(question)
 
@@ -47,25 +47,38 @@ router.post("/chat", async (req, res) => {
             "response": "Your supportive response"
         }`;
 
-        const chatId = uuidv4(); //generated a new chatId 
+        const chatId = uuidv4(); 
 
-        const response = await model.generateContent(prompt)
-        const responseInText = response.response.text()
+        // const userId2 = cuid();
+        // console.log(userId2.length);
+
+        const response = await genAI.models.generateContent({
+            model: model,
+            contents: prompt
+        })
+        const responseInText = response.text;
+
 
         let finalRes
         try {
-            const cleanedText = responseInText.replace(/```json/g, "").replace(/```/g, "").replace(/\\n/g, " ").replace(/\*\*/g, "").trim();
+            const cleanedText = (responseInText || "")
+                .replace(/```json/g, "")
+                .replace(/```/g, "")
+                .replace(/\\n/g, " ")
+                .replace(/\*\*/g, "")
+                .trim();
+                
             finalRes = JSON.parse(cleanedText)
             // console.log(finalRes)
 
             const conversation = await prisma.conversation.create({
-                data: { title: "What's up!" }
+                data: { title: question.slice(0, 50) || "" }
             })
 
             await prisma.execution.create({
                 data: {
                     user: { connect: { id: userId }},
-                    title: (question && question.toString().slice(0, 200)) || "Chat",
+                    title: question.slice(0, 200) || "Chat",
                     externalId: conversation.id,
                     chatId: chatId
                 }
@@ -90,7 +103,7 @@ router.post("/chat", async (req, res) => {
 
     } catch (e) {
         console.log("Error in generating the response: ", e)
-        res.status(500).json({success: false, message: "I cannot answer this question."})
+        res.status(500).json({success: false, message: "Failed to generate response. Please try again."})
     }
 
 })

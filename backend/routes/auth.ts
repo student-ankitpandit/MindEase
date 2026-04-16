@@ -41,6 +41,12 @@ router.post("/signup", async (req, res) => {
             .json({success: false, message: "User with this email already exist"})
         }
 
+        // if (existingUser && existingUser.googleId) {
+        //     return res.status(400).json({
+        //         error: "An account with this email already exists via Google login. Please sign in with Google."
+        //     });
+        // }
+
         const hashPassword = await bcrypt.hash(password, 10)
 
         //saving user to db
@@ -49,7 +55,7 @@ router.post("/signup", async (req, res) => {
                 name: name || "",
                 email: email,
                 password: hashPassword,
-                googleId: ""
+                googleId: null
             }
         })
 
@@ -66,7 +72,7 @@ router.post("/signup", async (req, res) => {
 
         return res
         .status(201)
-        .json({success: true, message: "Account created successfully", user: {id: user.id, email: user.email, }})
+        .json({success: true, message: "Account created successfully", user: {id: user.id, email: user.email, name: user.name || ""}})
     } catch (e) {
         console.log("Error: ", e);
         return res
@@ -141,7 +147,9 @@ router.post("/login", async (req, res) => {
             .json({
                 success: true, 
                 message: "User logged in successfully", 
-                token: token, user: {id: user.id, email: user.email, pass: user.password}})
+                token: token, 
+                userId: user.id
+            })
         
     } catch (e) {
         console.log("Error: ", e)
@@ -163,7 +171,7 @@ router.post("/logout", async(req, res) => {
         //     "next-auth.session-token=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0"
         // ];
 
-        res.setHeader("Set-Cookie", "token=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0",);
+        res.setHeader("Set-Cookie", "token=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0");
 
         return res.status(200).json({ success: true, message: "Logged out successfully." });
     } catch (error) {
@@ -174,12 +182,20 @@ router.post("/logout", async(req, res) => {
 })
 
 router.get("/me", authMiddleware, async (req, res) => {
-    const userId = req.userId
+    const userId = req.user?.id
+
+    if(!userId) {
+        res.status(401).json({
+            success: false,
+            message: "UserId not found"
+        })
+        return
+    }
 
     const user = await prisma.user.findUnique({ where: { id: userId } })
 
     if(!user) {
-        res.status(401).send({
+        res.status(401).json({
             success: false, 
             message: "Unauthorized"
         }); 

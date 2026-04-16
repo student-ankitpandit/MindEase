@@ -28,13 +28,11 @@ const handleLogout = async () => {
       method: "POST",
       credentials: "include",
     })
-    
-  
     if(!res.ok) {
       console.log("Logout failed", res.status);
     }
 
-    // window.location.href = "/"; // Redirect to home page after logout
+    window.location.href = "/"; // Redirect to home page after logout
   } catch (e) {
     console.error("An error occurred during logout", e);
   }
@@ -78,7 +76,10 @@ function HomeSection() {
             </Link>
             <Link href={"/"}>MindEase</Link>
           </h2>
-            <Button onClick={handleLogout} className="bg-blue-700 hover:bg-blue-500 text-white cursor-pointer ml-auto">Logout</Button>
+            <Button onClick={handleLogout} className="bg-white text-black cursor-pointer ml-auto">Logout</Button>
+            <Button onClick={() => window.location.href = 'http://localhost:8000/auth/v1/logout'}>
+              Logout
+            </Button>
           </div>
         </div>
         <div className="p-4 relative z-10 w-full text-center ">
@@ -96,7 +97,7 @@ function HomeSection() {
                 as="button"
                 className="dark:bg-black bg-black text-white dark:text-white flex items-center space-x-2 cursor-pointer justify-center"
               >
-                Get Started
+                Chat with AI
               </HoverBorderGradient>
             </Link>
           </div>

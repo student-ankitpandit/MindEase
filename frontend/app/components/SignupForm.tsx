@@ -21,12 +21,12 @@ import { signIn } from "next-auth/react";
 export default function SignupPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
   });
   const [errors, setErrors] = useState<{
-    username?: string;
+    name?: string;
     email?: string;
     password?: string;
     submit?: string;
@@ -49,6 +49,7 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     setLoading(true);
+    setErrors({});
 
     // console.log('Sending data:', email, password);
 
@@ -61,13 +62,14 @@ export default function SignupPage() {
         body: JSON.stringify(formData),
       });
 
+      
       const data = await res.json();
       console.log("Response", data);
 
       if (!res.ok) {
         console.log("Something went wrong", data);
       } else {
-        setTimeout(() => router.push("/dashboard"), 1000);
+        setTimeout(() => router.push("/chat"), 0);
       }
 
       // console.log(`Logged In as ${email}`)
@@ -107,15 +109,15 @@ export default function SignupPage() {
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
-                  name="username"
+                  name="name"
                   type="text"
                   placeholder="Full Name"
-                  value={formData.username}
+                  value={formData.name}
                   onChange={handleChange}
                   required
                 />
-                {errors.username && (
-                  <p className="text-red-500 text-sm">{errors.username}</p>
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name}</p>
                 )}
               </div>
 
@@ -212,7 +214,7 @@ export default function SignupPage() {
 
 //     const router = useRouter()
 
-//     const [username, setUsername] = useState('')
+//     const [name, setname] = useState('')
 //     const [email, setEmail] = useState('')
 //     const [password, setPassword] = useState('')
 //     const [loading, setLoading] = useState(false)
@@ -221,7 +223,7 @@ export default function SignupPage() {
 //         e.preventDefault()
 //         setLoading(true)
 
-//         // console.log('Sending data:', username, email, password);
+//         // console.log('Sending data:', name, email, password);
 //       try {
 //         const res = await fetch(`${BACKEND_URL}/auth/signup`, {
 //           method: "POST",
@@ -229,7 +231,7 @@ export default function SignupPage() {
 //             "Content-Type": "application/json"
 //           },
 //           body: JSON.stringify({
-//             username, email, password
+//             name, email, password
 //           })
 //         });
 //         const data = await res.json();
@@ -257,8 +259,8 @@ export default function SignupPage() {
 //       //         placeholder="Name"
 //       //         className="border-2 p-2 rounded-lg mb-4 w-80 block"
 //       //         required
-//       //         value={username}
-//       //         onChange={(e) => setUsername(e.target.value)}
+//       //         value={name}
+//       //         onChange={(e) => setname(e.target.value)}
 //       //       />
 //       //       <input type="email"
 //       //         placeholder="Email"

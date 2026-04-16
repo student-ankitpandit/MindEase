@@ -22,10 +22,13 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     }
 
     try {
-        const data = jwt.verify(authToken, process.env.JWT_SECRET!);
+        const decodedData = jwt.verify(authToken, process.env.JWT_SECRET!);
         // console.log(data);
-        (req as authenticatedRequest).userId = (data as unknown as customJWTPayload).userId as unknown as string;
+        (req as authenticatedRequest).userId = (decodedData as unknown as customJWTPayload).userId as unknown as string;
+
         next();
+
+        
     } catch (e) {
         res.status(403).json({
             message: "Auth token invalid",

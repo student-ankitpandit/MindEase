@@ -12,12 +12,7 @@ import { PrismaClient } from "./prisma/generated/prisma";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import prisma from "./lib/prisma";
-
-
-
-// console.log('Google Callback URL:', process.env.GOOGLE_CALLBACK_URL);
-// console.log("FRONTEND_URL:", process.env.FRONTEND_URL);  
-//     console.log("Redirecting to:", process.env.FRONTEND_URL);
+import jwt from "jsonwebtoken";
 
 
 const app = express();
@@ -26,6 +21,8 @@ const app = express();
 app.get("/", (req: any, res: any) => {
   return res.json({ message: "Hello from server" });
 });
+
+const PORT = process.env.PORT || 8000
 
 // cors
 app.use(
@@ -47,6 +44,13 @@ app.use(
     secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/'
+    }
   }),
 );
 
@@ -70,7 +74,6 @@ passport.use(
         if (!user) {
           user = await prisma.user.create({
             data: {
-              id: profile.id,
               googleId: profile.id,
               email: profile.emails![0]?.value || "",
               name: profile.displayName,
@@ -115,13 +118,9 @@ app.get(
     failureRedirect: `${process.env.FRONTEND_URL}/login`,
   }),
   (req, res) => {
-    res.redirect(process.env.FRONTEND_URL!);
+    res.redirect(`${process.env.FRONTEND_URL!}/dashboard`);
   },
 );
-
-// app.get('/auth/google/callback', (req, res) => {
-//   res.send('Callback route is working!');
-// });
 
 app.get("/api/user", (req, res) => {
   if (!req.isAuthenticated()) {
@@ -130,10 +129,22 @@ app.get("/api/user", (req, res) => {
   return res.json(req.user);
 });
 
-app.get("/auth/logout", (req, res) => {
+app.get("/auth/v1/logout", (req, res) => {
   req.logOut((err) => {
     if (err) return res.status(500).json({ error: "Logout failed" });
-    res.redirect(process.env.FRONTEND_URL!);
+
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Session destroy error:', err);
+      }
+      res.clearCookie('connect.sid', {
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax'
+      });
+      
+      res.redirect(process.env.FRONTEND_URL!);
+    });
   });
 });
 
@@ -145,6 +156,6 @@ app.use("/verification-code", verificationCode);
 app.use("/chatWithMe", chatRoutes);
 app.use("/startJournaling", journalingRoutes);
 
-app.listen(8000, () => {
-  console.log("Server is up and listening on port 8000");
+app.listen(PORT, () => {
+  console.log(`Server is up and listening on port ${PORT}`);
 });
