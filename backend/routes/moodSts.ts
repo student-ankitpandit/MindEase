@@ -1,83 +1,100 @@
-import express, { Router } from "express"
-import z from "zod"
-import prisma from "../lib/prisma"
-import { model } from "../config/geminiConfig"
-import { authMiddleware } from "../auth-middleware"
+import { Router } from "express";
+import z from "zod";
+import prisma from "../lib/prisma";
+import { model, genAI } from "../config/geminiConfig";
+import { authMiddleware } from "../auth-middleware";
 
+const router = Router();
 
-const router = Router()
-
+// POST /moodSts/moodStatus — submit a mood entry with AI analysis
 router.post("/moodStatus", authMiddleware, async (req, res) => {
     try {
-        //validate input
         const moodSchema = z.object({
-            userId: z.string(),
-            text: z.string().min(3, "Please describe your day")
-        })
+            text: z.string().min(3, "Please describe your day"),
+        });
 
-        const result = moodSchema.safeParse(req.body)
+        const result = moodSchema.safeParse(req.body);
 
-        //convinient way to sending all the errors to the client
-        if(!result.success) {
-            const flatternErrors = result.error.flatten()
-            console.log("FlatternErrors: ", flatternErrors)
-            return res
-            .status(400)
-            .json({success: false, errors: flatternErrors})
+        if (!result.success) {
+            const flattenErrors = result.error.flatten();
+            return res.status(400).json({ success: false, errors: flattenErrors });
         }
 
-        const {text} = result.data
-        const userId = req.userId
+        const { text } = result.data;
+        const userId = req.userId;
 
-        const prompt = `
-        Anaylze the following text and return:
-        1: The mood type (happy, sad, stressed, angry, neutral, etc.)
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Unauthorized" });
+        }
+
+        const prompt = `Analyze the following text and return:
+        1: The mood type (happy, sad, stressed, angry, neutral, anxious, excited, calm, grateful, lonely)
         2: One short actionable advice for the user to improve or maintain their well-being.
         Text: "${text}"
 
-        Response format(JSON only)
-        {
-            "moodType": "string",
-            "advice": "string"
-        }
-        `;
-        
-        const response = await model.generateContent(prompt)
-        const resText = response.response.text()
-        let moodResult
+        Response format (JSON only):
+        { "moodType": "string", "advice": "string" }`;
+
+        const response = await genAI.models.generateContent({ model, contents: prompt });
+        const resText = response.text;
+        let moodResult;
 
         try {
-            const cleanedText = resText.replace(/```json/g, "").replace(/```/g, "").trim()
-
-            moodResult = JSON.parse(cleanedText) //coz what if the response is not in JSON type in that case we have parse into JSON explicitly
+            const cleanedText = (resText || "").replace(/```json/g, "").replace(/```/g, "").trim();
+            moodResult = JSON.parse(cleanedText);
         } catch (e) {
-            console.log("Failed to parse AI response  : ",e)
-            return res
-            .status(500)
-            .json({success: false, message: "Failed to parse AI response"})
+            console.error("Failed to parse AI response:", e);
+            return res.status(500).json({ success: false, message: "Failed to parse AI response" });
         }
 
         const mood = await prisma.mood.create({
             data: {
-                userId: userId!,
+                userId,
                 text,
-                moodType: moodResult.moodType || "unknown"
-            }
-        })
+                moodType: moodResult.moodType || "unknown",
+            },
+        });
 
         return res.status(201).json({
             success: true,
             mood: moodResult.moodType,
             advice: moodResult.advice,
             saved: mood,
-            message: "Mood status saved successfully"
-        })
-
+            message: "Mood status saved successfully",
+        });
     } catch (e) {
-        console.log("Error: ", e)
-        return res.status(500).json({success: false, message: "Something went wrong while saving your mood status", error: e instanceof Error ? e.message : e})
-        
+        console.error("Error:", e);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong while saving your mood status",
+            error: e instanceof Error ? e.message : e,
+        });
     }
-})
+});
 
-export default router
+// DELETE /moodSts/:id — delete a mood entry
+router.delete("/:id", authMiddleware, async (req, res) => {
+    const userId = req.userId;
+    const moodId = req.params.id;
+
+    if (!userId) {
+        return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    try {
+        const mood = await prisma.mood.findFirst({ where: { id: moodId, userId } });
+
+        if (!mood) {
+            return res.status(404).json({ success: false, message: "Mood entry not found" });
+        }
+
+        await prisma.mood.delete({ where: { id: moodId } });
+
+        return res.status(200).json({ success: true, message: "Mood entry deleted successfully" });
+    } catch (e) {
+        console.error("Error deleting mood:", e);
+        return res.status(500).json({ success: false, message: "Could not delete mood entry" });
+    }
+});
+
+export default router;

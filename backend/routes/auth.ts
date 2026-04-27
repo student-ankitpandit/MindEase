@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import z, { email, success } from 'zod';
+import z from 'zod';
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken"
 import { prisma } from '../lib/prisma';
@@ -182,7 +182,7 @@ router.post("/logout", async(req, res) => {
 })
 
 router.get("/me", authMiddleware, async (req, res) => {
-    const userId = req.user?.id
+    const userId = req.userId;
 
     if(!userId) {
         res.status(401).json({

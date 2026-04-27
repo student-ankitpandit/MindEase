@@ -29,7 +29,11 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/chat/:path*',
+    '/voice/:path*',
     '/journaling/:path*',
-    '/dashboard'
-  ], // Protect all chat routes
+    '/dashboard',
+    '/mood/:path*',
+    '/self-care-toolkit/:path*',
+    '/community/:path*',
+  ],
 };

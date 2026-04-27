@@ -15,28 +15,23 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(cuid())
-  googleId    String?      @unique @map("google_id")
-  name        String?
-  email       String       @unique
-  password    String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  moods       Mood[]
-  executions  Execution[]
-  journalings Journaling[]
+  id               String           @id @default(cuid())
+  googleId         String?          @unique @map("google_id")
+  name             String?
+  email            String           @unique
+  password         String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  moods            Mood[]
+  executions       Execution[]
+  journalings      Journaling[]
+  copingStrategies CopingStrategy[]
+  peerStories      PeerStory[]
+  storySupports    StorySupport[]
+  storyComments    StoryComment[]
 
   @@map("users")
 }
-
-// model Dashboard {
-//   id          String       @id @default(cuid())
-//   name        String
-//   description String
-//   createdAt   DateTime     @default(now())
-//   updatedAt   DateTime     @updatedAt
-//   journaling  Journaling[]
-// }
 
 enum MoodType {
   HAPPY
@@ -55,6 +50,7 @@ model Journaling {
   id        String    @id @default(cuid())
   title     String?
   content   String    @db.Text
+  isPrivate Boolean   @default(true)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   userId    String
@@ -62,9 +58,6 @@ model Journaling {
   moodType  MoodType?
   moodScore Int?      @db.SmallInt
   tags      String[]  @default([])
-
-  // dashboardId String
-  // dashboard   Dashboard @relation(fields: [dashboardId], references: [id])
 
   @@index([userId, createdAt])
 }
@@ -78,7 +71,7 @@ model Execution {
   updatedAt  DateTime @updatedAt
   userId     String
   user       User     @relation(fields: [userId], references: [id])
-  externalId String? //linked to the conversation.id 
+  externalId String?
 }
 
 model Conversation {
@@ -106,4 +99,77 @@ model Mood {
   moodType  String
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+model CopingStrategy {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  category       String
+  title          String
+  description    String   @db.Text
+  practiceType   String   @default("general")
+  steps          String[] @default([])
+  duration       Int      @default(10)
+  difficulty     String   @default("beginner")
+  isSaved        Boolean  @default(false)
+  completedCount Int      @default(0)
+  rating         Int?
+  culturalNote   String?
+  createdAt      DateTime @default(now())
+
+  @@index([userId])
+}
+
+model PeerStory {
+  id           String         @id @default(cuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id])
+  title        String
+  content      String         @db.Text
+  category     String         @default("general")
+  tags         String[]       @default([])
+  isApproved   Boolean        @default(false)
+  isAnonymous  Boolean        @default(true)
+  supportCount Int            @default(0)
+  createdAt    DateTime       @default(now())
+  supports     StorySupport[]
+  comments     StoryComment[]
+
+  @@index([userId])
+  @@index([category])
+}
+
+model StorySupport {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  storyId   String
+  story     PeerStory @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  type      String    @default("heart")
+  createdAt DateTime  @default(now())
+
+  @@unique([userId, storyId])
+}
+
+model StoryComment {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  storyId    String
+  story      PeerStory @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  content    String
+  isApproved Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  @@index([storyId])
 }

@@ -134,6 +134,7 @@ exports.Prisma.JournalingScalarFieldEnum = {
   id: 'id',
   title: 'title',
   content: 'content',
+  isPrivate: 'isPrivate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
@@ -177,6 +178,62 @@ exports.Prisma.MoodScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.FeedbackScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  subject: 'subject',
+  message: 'message',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CopingStrategyScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  category: 'category',
+  title: 'title',
+  description: 'description',
+  practiceType: 'practiceType',
+  steps: 'steps',
+  duration: 'duration',
+  difficulty: 'difficulty',
+  isSaved: 'isSaved',
+  completedCount: 'completedCount',
+  rating: 'rating',
+  culturalNote: 'culturalNote',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PeerStoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  content: 'content',
+  category: 'category',
+  tags: 'tags',
+  isApproved: 'isApproved',
+  isAnonymous: 'isAnonymous',
+  supportCount: 'supportCount',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.StorySupportScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  storyId: 'storyId',
+  type: 'type',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.StoryCommentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  storyId: 'storyId',
+  content: 'content',
+  isApproved: 'isApproved',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -210,7 +267,12 @@ exports.Prisma.ModelName = {
   Execution: 'Execution',
   Conversation: 'Conversation',
   Message: 'Message',
-  Mood: 'Mood'
+  Mood: 'Mood',
+  Feedback: 'Feedback',
+  CopingStrategy: 'CopingStrategy',
+  PeerStory: 'PeerStory',
+  StorySupport: 'StorySupport',
+  StoryComment: 'StoryComment'
 };
 
 /**

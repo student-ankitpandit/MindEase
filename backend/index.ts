@@ -1,3 +1,7 @@
+import { ensureEncryptionKey } from "./lib/setupKey";
+// Ensure encryption key is generated and saved to .env before anything else starts
+ensureEncryptionKey();
+
 import express from "express";
 import authRoutes from "./routes/auth";
 import moodRoutes from "./routes/moodSts";
@@ -5,14 +9,16 @@ import getYourMoodStatuses from "./routes/getMoodSts";
 import verificationCode from "./routes/auth";
 import chatRoutes from "./routes/chat";
 import journalingRoutes from "./routes/journaling";
-import cookieParser from "cookie-parser";
+import dashboardRoutes from "./routes/dashboard";
+import feedbackRoutes from "./routes/feedback";
+import copingRoutes from "./routes/coping";
+import storiesRoutes from "./routes/stories";
+import voiceRoutes from "./routes/voice";
 import cors from "cors";
 import session from "express-session";
-import { PrismaClient } from "./prisma/generated/prisma";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import prisma from "./lib/prisma";
-import jwt from "jsonwebtoken";
 
 
 const app = express();
@@ -155,6 +161,11 @@ app.use("/getMoodSts", getYourMoodStatuses);
 app.use("/verification-code", verificationCode);
 app.use("/chatWithMe", chatRoutes);
 app.use("/startJournaling", journalingRoutes);
+app.use("/dashboard", dashboardRoutes);
+app.use("/feedback", feedbackRoutes);
+app.use("/coping", copingRoutes);
+app.use("/stories", storiesRoutes);
+app.use("/voice", voiceRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is up and listening on port ${PORT}`);
