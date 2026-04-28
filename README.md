@@ -210,18 +210,4 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
-
-This project is open-source and available under the [MIT License](LICENSE).
-
----
-
-## 👤 Author
-
-**Ankit Pandit**
-
-- GitHub: [@student-ankitpandit](https://github.com/student-ankitpandit)
-
----
-
 <p align="center">Built with ❤️ to make mental wellness more accessible.</p>
