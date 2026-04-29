@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 8000
 // cors
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://mindease-production-24e8.up.railway.app/", 
     credentials: true,
     allowedHeaders: ["Content-Type, Authorization"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

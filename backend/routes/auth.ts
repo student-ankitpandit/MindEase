@@ -7,12 +7,8 @@ import { prisma } from '../lib/prisma';
 // import { TOTP } from 'totp-generator';
 // import base32 from 'hi-base32';
 import { authMiddleware } from '../auth-middleware';
-import app from './index';
-
-
 
 const router = Router();
-
 
 router.post("/signup", async (req, res) => {
     try {

@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   MessageCircle,
-  Mic,
   BookOpen,
   Brain,
   Sparkles,
@@ -29,7 +28,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
     document.cookie = "token=; Path=/; Max-Age=0";
     window.location.href = "/login";
   };
@@ -51,17 +50,21 @@ export default function Sidebar() {
       {/* Nav Links */}
       <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+          const isActive =
+            pathname === item.href || pathname?.startsWith(item.href + "/");
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all duration-300 ${isActive
+              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all duration-300 ${
+                isActive
                   ? "bg-gradient-to-r from-blue-600/20 to-purple-600/10 text-blue-300 font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] border border-blue-500/10"
                   : "text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200 border border-transparent"
-                }`}
+              }`}
             >
-              <item.icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-blue-400" : "text-neutral-500 group-hover:text-neutral-300"}`} />
+              <item.icon
+                className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-blue-400" : "text-neutral-500 group-hover:text-neutral-300"}`}
+              />
               {item.label}
             </Link>
           );

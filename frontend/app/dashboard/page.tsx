@@ -3,22 +3,45 @@
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/app/lib/api";
 import Sidebar from "@/components/Sidebar";
-import { BarChart3, BookOpen, MessageCircle, Brain, TrendingUp } from "lucide-react";
+import {
+  BarChart3,
+  BookOpen,
+  MessageCircle,
+  Brain,
+  TrendingUp,
+} from "lucide-react";
 
 interface DashboardData {
   stats: { totalMoods: number; totalJournals: number; totalChats: number };
   recentActivity: {
     moods: { id: string; moodType: string; text: string; createdAt: string }[];
-    journals: { id: string; title: string; moodType: string | null; createdAt: string }[];
+    journals: {
+      id: string;
+      title: string;
+      moodType: string | null;
+      createdAt: string;
+    }[];
     chats: { id: string; title: string; createdAt: string }[];
   };
   moodDistribution: { mood: string; count: number }[];
   moodTrend: Record<string, string[]>;
 }
 
+interface DashboardResponse {
+  data: DashboardData;
+}
+
 const moodEmojis: Record<string, string> = {
-  happy: "😄", sad: "😔", stressed: "😣", angry: "😡", neutral: "😐",
-  anxious: "😰", excited: "🤩", calm: "🧘", grateful: "🙏", lonely: "😢",
+  happy: "😄",
+  sad: "😔",
+  stressed: "😣",
+  angry: "😡",
+  neutral: "😐",
+  anxious: "😰",
+  excited: "🤩",
+  calm: "🧘",
+  grateful: "🙏",
+  lonely: "😢",
 };
 
 function getMoodEmoji(mood: string) {
@@ -39,7 +62,10 @@ const moodColors: Record<string, string> = {
 };
 
 function getMoodColor(mood: string) {
-  return moodColors[mood?.toLowerCase()] || "from-gray-500/20 to-gray-600/5 border-gray-500/30";
+  return (
+    moodColors[mood?.toLowerCase()] ||
+    "from-gray-500/20 to-gray-600/5 border-gray-500/30"
+  );
 }
 
 export default function DashboardPage() {
@@ -48,9 +74,13 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    apiFetch("/dashboard/summary")
+    apiFetch<DashboardResponse>("/dashboard/summary")
       .then((res) => setData(res.data))
-      .catch((err) => setError(err.message))
+      .catch((err: unknown) => {
+        const message =
+          err instanceof Error ? err.message : "Failed to load dashboard.";
+        setError(message);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -62,13 +92,17 @@ export default function DashboardPage() {
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-4">
               <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-neutral-400 animate-pulse">Loading your dashboard...</p>
+              <p className="text-neutral-400 animate-pulse">
+                Loading your dashboard...
+              </p>
             </div>
           </div>
         ) : error ? (
           <div className="flex items-center justify-center h-full">
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 max-w-md text-center">
-              <p className="text-red-400 text-lg font-medium">Failed to load dashboard</p>
+              <p className="text-red-400 text-lg font-medium">
+                Failed to load dashboard
+              </p>
               <p className="text-red-300/70 text-sm mt-2">{error}</p>
             </div>
           </div>
@@ -77,18 +111,40 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold">Welcome back 👋</h1>
-              <p className="text-neutral-400 mt-1">Here&apos;s your mental wellness overview</p>
+              <p className="text-neutral-400 mt-1">
+                Here&apos;s your mental wellness overview
+              </p>
             </div>
 
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               {[
-                { label: "Mood Check-ins", value: data.stats.totalMoods, icon: Brain, gradient: "from-purple-600 to-indigo-600" },
-                { label: "Journal Entries", value: data.stats.totalJournals, icon: BookOpen, gradient: "from-emerald-600 to-teal-600" },
-                { label: "AI Conversations", value: data.stats.totalChats, icon: MessageCircle, gradient: "from-blue-600 to-cyan-600" },
+                {
+                  label: "Mood Check-ins",
+                  value: data.stats.totalMoods,
+                  icon: Brain,
+                  gradient: "from-purple-600 to-indigo-600",
+                },
+                {
+                  label: "Journal Entries",
+                  value: data.stats.totalJournals,
+                  icon: BookOpen,
+                  gradient: "from-emerald-600 to-teal-600",
+                },
+                {
+                  label: "AI Conversations",
+                  value: data.stats.totalChats,
+                  icon: MessageCircle,
+                  gradient: "from-blue-600 to-cyan-600",
+                },
               ].map((card) => (
-                <div key={card.label} className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 p-6 transition-all hover:border-neutral-700 hover:scale-[1.02]">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-10`} />
+                <div
+                  key={card.label}
+                  className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 p-6 transition-all hover:border-neutral-700 hover:scale-[1.02]"
+                >
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-10`}
+                  />
                   <div className="relative flex items-center justify-between">
                     <div>
                       <p className="text-neutral-400 text-sm">{card.label}</p>
@@ -106,15 +162,26 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-2 mb-4">
                   <BarChart3 className="w-5 h-5 text-purple-400" />
                   <h2 className="text-xl font-semibold">Mood Distribution</h2>
-                  <span className="text-xs text-neutral-500 ml-2">Last 30 days</span>
+                  <span className="text-xs text-neutral-500 ml-2">
+                    Last 30 days
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {data.moodDistribution.map((item) => (
-                    <div key={item.mood} className={`bg-gradient-to-br ${getMoodColor(item.mood)} border rounded-xl px-4 py-3 flex items-center gap-2 transition-transform hover:scale-105`}>
-                      <span className="text-2xl">{getMoodEmoji(item.mood)}</span>
+                    <div
+                      key={item.mood}
+                      className={`bg-gradient-to-br ${getMoodColor(item.mood)} border rounded-xl px-4 py-3 flex items-center gap-2 transition-transform hover:scale-105`}
+                    >
+                      <span className="text-2xl">
+                        {getMoodEmoji(item.mood)}
+                      </span>
                       <div>
-                        <p className="text-sm font-medium capitalize">{item.mood}</p>
-                        <p className="text-xs text-neutral-400">{item.count} time{item.count !== 1 ? "s" : ""}</p>
+                        <p className="text-sm font-medium capitalize">
+                          {item.mood}
+                        </p>
+                        <p className="text-xs text-neutral-400">
+                          {item.count} time{item.count !== 1 ? "s" : ""}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -131,13 +198,20 @@ export default function DashboardPage() {
                 </div>
                 <div className="grid grid-cols-7 gap-2">
                   {Object.entries(data.moodTrend).map(([date, moods]) => (
-                    <div key={date} className="text-center rounded-lg bg-neutral-800/50 p-3">
+                    <div
+                      key={date}
+                      className="text-center rounded-lg bg-neutral-800/50 p-3"
+                    >
                       <p className="text-xs text-neutral-500 mb-2">
-                        {new Date(date).toLocaleDateString("en-US", { weekday: "short" })}
+                        {new Date(date).toLocaleDateString("en-US", {
+                          weekday: "short",
+                        })}
                       </p>
                       <div className="flex flex-col items-center gap-1">
                         {moods.map((mood, i) => (
-                          <span key={i} className="text-lg">{getMoodEmoji(mood)}</span>
+                          <span key={i} className="text-lg">
+                            {getMoodEmoji(mood)}
+                          </span>
                         ))}
                       </div>
                     </div>
@@ -154,15 +228,29 @@ export default function DashboardPage() {
                   <h3 className="font-semibold">Recent Moods</h3>
                 </div>
                 {data.recentActivity.moods.length === 0 ? (
-                  <p className="text-neutral-500 text-sm">No mood entries yet</p>
+                  <p className="text-neutral-500 text-sm">
+                    No mood entries yet
+                  </p>
                 ) : (
                   <div className="space-y-3">
                     {data.recentActivity.moods.map((mood) => (
-                      <div key={mood.id} className="flex items-start gap-3 p-2 rounded-lg hover:bg-neutral-800/50 transition-colors">
-                        <span className="text-xl mt-0.5">{getMoodEmoji(mood.moodType)}</span>
+                      <div
+                        key={mood.id}
+                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-neutral-800/50 transition-colors"
+                      >
+                        <span className="text-xl mt-0.5">
+                          {getMoodEmoji(mood.moodType)}
+                        </span>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-neutral-300 truncate">{mood.text}</p>
-                          <p className="text-xs text-neutral-500">{new Date(mood.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+                          <p className="text-sm text-neutral-300 truncate">
+                            {mood.text}
+                          </p>
+                          <p className="text-xs text-neutral-500">
+                            {new Date(mood.createdAt).toLocaleDateString(
+                              "en-US",
+                              { month: "short", day: "numeric" },
+                            )}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -176,13 +264,25 @@ export default function DashboardPage() {
                   <h3 className="font-semibold">Recent Journals</h3>
                 </div>
                 {data.recentActivity.journals.length === 0 ? (
-                  <p className="text-neutral-500 text-sm">No journal entries yet</p>
+                  <p className="text-neutral-500 text-sm">
+                    No journal entries yet
+                  </p>
                 ) : (
                   <div className="space-y-3">
                     {data.recentActivity.journals.map((journal) => (
-                      <div key={journal.id} className="p-2 rounded-lg hover:bg-neutral-800/50 transition-colors">
-                        <p className="text-sm text-neutral-300 font-medium truncate">{journal.title || "Untitled"}</p>
-                        <p className="text-xs text-neutral-500">{new Date(journal.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+                      <div
+                        key={journal.id}
+                        className="p-2 rounded-lg hover:bg-neutral-800/50 transition-colors"
+                      >
+                        <p className="text-sm text-neutral-300 font-medium truncate">
+                          {journal.title || "Untitled"}
+                        </p>
+                        <p className="text-xs text-neutral-500">
+                          {new Date(journal.createdAt).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric" },
+                          )}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -195,13 +295,25 @@ export default function DashboardPage() {
                   <h3 className="font-semibold">Recent Chats</h3>
                 </div>
                 {data.recentActivity.chats.length === 0 ? (
-                  <p className="text-neutral-500 text-sm">No conversations yet</p>
+                  <p className="text-neutral-500 text-sm">
+                    No conversations yet
+                  </p>
                 ) : (
                   <div className="space-y-3">
                     {data.recentActivity.chats.map((chat) => (
-                      <div key={chat.id} className="p-2 rounded-lg hover:bg-neutral-800/50 transition-colors">
-                        <p className="text-sm text-neutral-300 truncate">{chat.title}</p>
-                        <p className="text-xs text-neutral-500">{new Date(chat.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+                      <div
+                        key={chat.id}
+                        className="p-2 rounded-lg hover:bg-neutral-800/50 transition-colors"
+                      >
+                        <p className="text-sm text-neutral-300 truncate">
+                          {chat.title}
+                        </p>
+                        <p className="text-xs text-neutral-500">
+                          {new Date(chat.createdAt).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric" },
+                          )}
+                        </p>
                       </div>
                     ))}
                   </div>

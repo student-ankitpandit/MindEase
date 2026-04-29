@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Space_Grotesk, Sora } from "next/font/google";
 import { MessageCircle, Mic, Brain, Sparkles, Shield, Clock, Heart, Users, ArrowRight, ChevronDown } from "lucide-react";
 import featuresData from "@/app/featdata/cardsData.json";
+import AuthButtons from "@/components/AuthButtons";
 
 const headingFont = Sora({
   subsets: ["latin"],
@@ -75,9 +76,8 @@ export default function HomePage() {
           <Brain className="h-8 w-8 text-teal-400" />
           <span className="font-[var(--font-heading)] text-2xl font-bold text-white tracking-tight">MindEase</span>
         </div>
-        <div className="flex gap-4">
-          <Link href="/login" className="hidden md:inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10">Log in</Link>
-          <Link href="/signup" className="inline-flex items-center justify-center rounded-xl bg-teal-500 px-5 py-2.5 text-sm font-bold text-neutral-950 transition-all hover:bg-teal-400 hover:scale-105 hover:shadow-[0_0_20px_rgba(45,212,191,0.4)]">Get Started</Link>
+        <div className="flex gap-4 items-center">
+          <AuthButtons />
         </div>
       </nav>
 
