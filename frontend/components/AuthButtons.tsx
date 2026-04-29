@@ -25,8 +25,9 @@ export default function AuthButtons() {
           setUserEmail(data.user.email);
           setUserInitial(data.user.email[0].toUpperCase());
         }
-      } catch (err: any) {
-        if (err.message === "Unauthorized" || err.message === "Auth token invalid") {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "";
+        if (message === "Unauthorized" || message === "Auth token invalid") {
           localStorage.removeItem("token");
           document.cookie = "token=; Path=/; Max-Age=0";
         }
