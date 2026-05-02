@@ -8,8 +8,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Youth Mental Wellness",
-  description: "A platform for youth mental health awareness and support.",
+  title: "MindEase",
+  description: "MindEase — an AI-powered mental wellness companion for students. Find calm, track your mood, and get support whenever you need it.",
 };
 
 export default function RootLayout({
