@@ -22,10 +22,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} antialiased home-shell relative overflow-x-hidden text-white`}
       >
-        {/* Dynamic Global Background Orbs */}
-        <div className="home-orb home-orb-left fixed" />
-        <div className="home-orb home-orb-right fixed" />
-
         <div className="relative z-10 flex min-h-screen flex-col">
           <div className="flex-1">{children}</div>
         </div>

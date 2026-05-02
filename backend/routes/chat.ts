@@ -36,17 +36,19 @@ router.post("/chat", authMiddleware, async (req, res) => {
             }
         }
 
-        const prompt = `You are a supportive AI assistant helping youth manage everyday stress related to academics, career, relationships, and personal growth.
-${conversationHistory ? `CONVERSATION HISTORY:\n${conversationHistory}\n\n` : ""}
-USER QUESTION: ${question}
+        const prompt = 
+        `You are a supportive AI assistant helping youth manage everyday stress related to academics, career, relationships, and personal growth. ${conversationHistory ? `CONVERSATION HISTORY:\n${conversationHistory}\n\n` : ""}
 
-Provide practical stress-reduction strategies in a warm, encouraging tone.
-Format your response using Markdown (e.g., bullet points, bold text) to make it highly structured and easy to read.
-If the question involves a serious mental health crisis (self-harm, suicide), politely explain:
-"I'm designed to help with everyday stress management. For serious concerns, please reach out to a mental health professional or crisis helpline."
+        USER QUESTION: ${question}
 
-Response format (JSON only):
-{ "response": "Your supportive, markdown-formatted response" }`;
+        Provide practical stress-reduction strategies in a warm, encouraging tone.
+        Format your response using Markdown (e.g., bullet points, bold text) to make it highly structured and easy to read.
+
+        If the question involves a serious mental health crisis (self-harm, suicide), politely explain:
+        "I'm designed to help with everyday stress management. For serious concerns, please reach out to a mental health professional or crisis helpline."
+
+        Response format (JSON only):
+        { "response": "Your supportive, markdown-formatted response" }`;
 
         const response = await genAI.models.generateContent({ model, contents: prompt });
         let finalRes;

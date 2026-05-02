@@ -1,8 +1,14 @@
 import { ensureEncryptionKey } from "./lib/setupKey";
-// Ensure encryption key is generated and saved to .env before anything else starts
+// Ensuring encryption key is generated and saved to .env before anything else starts
 ensureEncryptionKey();
 
 import express from "express";
+import cors from "cors";
+import session from "express-session";
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import jwt from "jsonwebtoken";
+import prisma from "./lib/prisma";
 import authRoutes from "./routes/auth";
 import moodRoutes from "./routes/moodSts";
 import getYourMoodStatuses from "./routes/getMoodSts";
@@ -14,37 +20,26 @@ import feedbackRoutes from "./routes/feedback";
 import copingRoutes from "./routes/coping";
 import storiesRoutes from "./routes/stories";
 import voiceRoutes from "./routes/voice";
-import cors from "cors";
-import session from "express-session";
-import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import prisma from "./lib/prisma";
-
 
 const app = express();
+const PORT = process.env.PORT || 8000;
 
-
-app.get("/", (req: any, res: any) => {
-  return res.json({ message: "Hello from server" });
-});
-
-const PORT = process.env.PORT || 8000
-
-// cors
+// CORS must be first so all routes get the headers
 app.use(
   cors({
-    origin: "https://mindease-production-24e8.up.railway.app/", 
+    origin: [
+      "http://localhost:3000",
+      "https://mindease-production-24e8.up.railway.app",
+    ],
     credentials: true,
-    allowedHeaders: ["Content-Type, Authorization"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   }),
 );
 
-// express
+// Body parsers 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// session
+// Session 
 app.use(
   session({
     secret: process.env.SESSION_SECRET!,
@@ -55,12 +50,12 @@ app.use(
       httpOnly: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
-      path: '/'
-    }
+      path: "/",
+    },
   }),
 );
 
-// passport
+// Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -95,14 +90,10 @@ passport.use(
   ),
 );
 
-
-
-// serialize
 passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
 
-// deserialize
 passport.deserializeUser(async (id: string, done) => {
   try {
     const user = await prisma.user.findUnique({ where: { id } });
@@ -112,7 +103,11 @@ passport.deserializeUser(async (id: string, done) => {
   }
 });
 
-// routes
+// Routes
+app.get("/", (req: any, res: any) => {
+  return res.json({ message: "Hello from server" });
+});
+
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] }),
@@ -124,7 +119,10 @@ app.get(
     failureRedirect: `${process.env.FRONTEND_URL}/login`,
   }),
   (req, res) => {
-    res.redirect(`${process.env.FRONTEND_URL!}/dashboard`);
+    const user = req.user as { id: string };
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
+    // Redirect to a frontend page that stores the token then goes to dashboard
+    res.redirect(`${process.env.FRONTEND_URL!}/auth/callback?token=${token}`);
   },
 );
 
@@ -141,20 +139,19 @@ app.get("/auth/v1/logout", (req, res) => {
 
     req.session.destroy((err) => {
       if (err) {
-        console.error('Session destroy error:', err);
+        console.error("Session destroy error:", err);
       }
-      res.clearCookie('connect.sid', {
-        path: '/',
+      res.clearCookie("connect.sid", {
+        path: "/",
         httpOnly: true,
-        sameSite: 'lax'
+        sameSite: "lax",
       });
-      
+
       res.redirect(process.env.FRONTEND_URL!);
     });
   });
 });
 
-// route-level middleware
 app.use("/auth", authRoutes);
 app.use("/moodSts", moodRoutes);
 app.use("/getMoodSts", getYourMoodStatuses);
@@ -167,6 +164,7 @@ app.use("/coping", copingRoutes);
 app.use("/stories", storiesRoutes);
 app.use("/voice", voiceRoutes);
 
+// Start
 app.listen(PORT, () => {
   console.log(`Server is up and listening on port ${PORT}`);
 });

@@ -85,11 +85,11 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="flex h-screen text-white">
+    <div className="flex min-h-screen text-white bg-neutral-950">
       <Sidebar />
       <main className="flex-1 overflow-y-auto p-6 md:p-8">
         {loading ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-full min-h-[60vh]">
             <div className="flex flex-col items-center gap-4">
               <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
               <p className="text-neutral-400 animate-pulse">
@@ -98,8 +98,8 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : error ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 max-w-md text-center">
+          <div className="flex items-center justify-center h-full min-h-[60vh]">
+            <div className="bg-red-950 border border-red-800 rounded-xl p-6 max-w-md text-center">
               <p className="text-red-400 text-lg font-medium">
                 Failed to load dashboard
               </p>
@@ -140,7 +140,7 @@ export default function DashboardPage() {
               ].map((card) => (
                 <div
                   key={card.label}
-                  className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 p-6 transition-all hover:border-neutral-700 hover:scale-[1.02]"
+                  className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 p-6 transition-[border-color,transform] duration-200 hover:border-neutral-700 hover:scale-[1.02]"
                 >
                   <div
                     className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-10`}
@@ -158,7 +158,7 @@ export default function DashboardPage() {
 
             {/* Mood Distribution */}
             {data.moodDistribution.length > 0 && (
-              <div className="mb-8 rounded-xl border border-neutral-800 bg-neutral-900/50 p-6">
+              <div className="mb-8 rounded-xl border border-neutral-800 bg-neutral-900 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <BarChart3 className="w-5 h-5 text-purple-400" />
                   <h2 className="text-xl font-semibold">Mood Distribution</h2>
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                   {data.moodDistribution.map((item) => (
                     <div
                       key={item.mood}
-                      className={`bg-gradient-to-br ${getMoodColor(item.mood)} border rounded-xl px-4 py-3 flex items-center gap-2 transition-transform hover:scale-105`}
+                      className={`bg-gradient-to-br ${getMoodColor(item.mood)} border rounded-xl px-4 py-3 flex items-center gap-2 transition-transform duration-200 hover:scale-105`}
                     >
                       <span className="text-2xl">
                         {getMoodEmoji(item.mood)}
@@ -191,7 +191,7 @@ export default function DashboardPage() {
 
             {/* Weekly Mood Trend */}
             {Object.keys(data.moodTrend).length > 0 && (
-              <div className="mb-8 rounded-xl border border-neutral-800 bg-neutral-900/50 p-6">
+              <div className="mb-8 rounded-xl border border-neutral-800 bg-neutral-900 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp className="w-5 h-5 text-teal-400" />
                   <h2 className="text-xl font-semibold">Weekly Trend</h2>
@@ -200,7 +200,7 @@ export default function DashboardPage() {
                   {Object.entries(data.moodTrend).map(([date, moods]) => (
                     <div
                       key={date}
-                      className="text-center rounded-lg bg-neutral-800/50 p-3"
+                      className="text-center rounded-lg bg-neutral-800 p-3"
                     >
                       <p className="text-xs text-neutral-500 mb-2">
                         {new Date(date).toLocaleDateString("en-US", {
@@ -222,7 +222,7 @@ export default function DashboardPage() {
 
             {/* Recent Activity Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6">
+              <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Brain className="w-5 h-5 text-purple-400" />
                   <h3 className="font-semibold">Recent Moods</h3>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
                     {data.recentActivity.moods.map((mood) => (
                       <div
                         key={mood.id}
-                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-neutral-800/50 transition-colors"
+                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-neutral-800 transition-colors duration-150"
                       >
                         <span className="text-xl mt-0.5">
                           {getMoodEmoji(mood.moodType)}
@@ -258,7 +258,7 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6">
+              <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <BookOpen className="w-5 h-5 text-emerald-400" />
                   <h3 className="font-semibold">Recent Journals</h3>
@@ -272,7 +272,7 @@ export default function DashboardPage() {
                     {data.recentActivity.journals.map((journal) => (
                       <div
                         key={journal.id}
-                        className="p-2 rounded-lg hover:bg-neutral-800/50 transition-colors"
+                        className="p-2 rounded-lg hover:bg-neutral-800 transition-colors duration-150"
                       >
                         <p className="text-sm text-neutral-300 font-medium truncate">
                           {journal.title || "Untitled"}
@@ -289,7 +289,7 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6">
+              <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <MessageCircle className="w-5 h-5 text-blue-400" />
                   <h3 className="font-semibold">Recent Chats</h3>
@@ -303,7 +303,7 @@ export default function DashboardPage() {
                     {data.recentActivity.chats.map((chat) => (
                       <div
                         key={chat.id}
-                        className="p-2 rounded-lg hover:bg-neutral-800/50 transition-colors"
+                        className="p-2 rounded-lg hover:bg-neutral-800 transition-colors duration-150"
                       >
                         <p className="text-sm text-neutral-300 truncate">
                           {chat.title}

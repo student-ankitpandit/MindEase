@@ -1,4 +1,4 @@
-let BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+let BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL!;
 if (BACKEND_URL && !BACKEND_URL.startsWith("http")) {
   BACKEND_URL = BACKEND_URL.includes("localhost") ? `http://${BACKEND_URL}` : `https://${BACKEND_URL}`;
 }

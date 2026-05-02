@@ -29,12 +29,12 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    document.cookie = "token=; Path=/; Max-Age=0";
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax;";
     window.location.href = "/login";
   };
 
   return (
-    <aside className="w-64 h-full bg-neutral-950/40 backdrop-blur-2xl border-r border-neutral-800/50 flex flex-col flex-shrink-0 z-10 relative">
+    <aside className="w-64 h-full bg-neutral-950 border-r border-neutral-800/50 flex flex-col flex-shrink-0 z-10 relative">
       {/* Logo */}
       <div className="pt-8 pb-6 px-6 border-b border-neutral-800/50">
         <Link href="/dashboard" className="flex items-center gap-3 group">
