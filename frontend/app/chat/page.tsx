@@ -114,7 +114,7 @@ export default function ChatPage() {
   useEffect(() => {
     apiFetch<ConversationsResponse>("/chatWithMe/conversations")
       .then((res) => setConversations(res.conversations || []))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setSideLoading(false));
     synthRef.current = window.speechSynthesis;
   }, []);
@@ -312,7 +312,7 @@ export default function ChatPage() {
         }
         apiFetch<ConversationsResponse>("/chatWithMe/conversations")
           .then((r) => setConversations(r.conversations || []))
-          .catch(() => {});
+          .catch(() => { });
       }
 
       const aiResponse =
@@ -412,7 +412,7 @@ export default function ChatPage() {
           }
           apiFetch<ConversationsResponse>("/chatWithMe/conversations")
             .then((r) => setConversations(r.conversations || []))
-            .catch(() => {});
+            .catch(() => { });
         }
 
         const aiResponse =
@@ -530,11 +530,10 @@ export default function ChatPage() {
               setVoiceEnabled(!voiceEnabled);
               if (voiceEnabled) stopSpeaking();
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition cursor-pointer ${
-              voiceEnabled
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition cursor-pointer ${voiceEnabled
                 ? "bg-green-600/20 text-green-400 border border-green-500/30"
                 : "bg-neutral-800 text-neutral-500 border border-neutral-700"
-            }`}
+              }`}
             title={
               voiceEnabled
                 ? "Disable voice responses"
@@ -567,11 +566,10 @@ export default function ChatPage() {
                       setSpeechLang(lang.code);
                       setShowLangMenu(false);
                     }}
-                    className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-neutral-800 transition cursor-pointer ${
-                      speechLang === lang.code
+                    className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-neutral-800 transition cursor-pointer ${speechLang === lang.code
                         ? "text-blue-400"
                         : "text-neutral-300"
-                    }`}
+                      }`}
                   >
                     <span>{lang.flag}</span> {lang.label}
                   </button>
@@ -639,11 +637,10 @@ export default function ChatPage() {
               conversations.map((conv) => (
                 <div
                   key={conv.id}
-                  className={`group flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all duration-300 ${
-                    activeConvId === conv.externalId
+                  className={`group flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all duration-300 ${activeConvId === conv.externalId
                       ? "bg-gradient-to-r from-blue-600/20 to-purple-600/10 text-blue-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] border border-blue-500/10"
                       : "text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200 border border-transparent"
-                  }`}
+                    }`}
                   onClick={() =>
                     conv.externalId && loadConversation(conv.externalId)
                   }
@@ -805,11 +802,10 @@ export default function ChatPage() {
                     )}
                   </div>
                   <div
-                    className={`max-w-xl px-4 py-3 rounded-2xl group relative ${
-                      msg.role === "user"
+                    className={`max-w-xl px-4 py-3 rounded-2xl group relative ${msg.role === "user"
                         ? "bg-blue-600 text-white rounded-tr-sm"
                         : "bg-neutral-800 text-neutral-100 border border-neutral-700 rounded-tl-sm"
-                    }`}
+                      }`}
                   >
                     <div
                       className={`text-sm leading-relaxed space-y-2 [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>h3]:font-bold [&>h3]:text-base ${msg.role === "user" ? "[&>p]:whitespace-pre-wrap" : ""}`}
@@ -857,11 +853,10 @@ export default function ChatPage() {
             <div className="max-w-3xl mx-auto flex gap-2 items-center">
               <button
                 onClick={toggleListening}
-                className={`flex-shrink-0 p-3 rounded-full transition cursor-pointer ${
-                  isListening
+                className={`flex-shrink-0 p-3 rounded-full transition cursor-pointer ${isListening
                     ? "bg-red-600 text-white animate-pulse"
                     : "bg-neutral-800 text-neutral-400 border border-neutral-700 hover:bg-neutral-700 hover:text-white"
-                }`}
+                  }`}
                 title={isListening ? "Stop listening" : "Start voice input"}
               >
                 {isListening ? (
@@ -885,11 +880,10 @@ export default function ChatPage() {
                   isListening ? "Listening..." : "Type or speak your message..."
                 }
                 disabled={loading}
-                className={`flex-1 px-4 py-3 bg-neutral-800 border text-white placeholder-neutral-500 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 ${
-                  isListening
+                className={`flex-1 px-4 py-3 bg-neutral-800 border text-white placeholder-neutral-500 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 ${isListening
                     ? "border-red-500/50 ring-1 ring-red-500/30"
                     : "border-neutral-700"
-                }`}
+                  }`}
               />
 
               <button

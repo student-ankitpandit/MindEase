@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { apiFetch } from "@/app/lib/api";
-import Sidebar from "@/components/Sidebar";
 import { Send, CheckCircle, AlertCircle } from "lucide-react";
 
 interface FeedbackResponse {
@@ -47,10 +46,8 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="flex h-screen text-white">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto flex justify-center px-4 py-10">
-        <div className="max-w-xl w-full">
+    <div className="flex justify-center px-4 py-10">
+      <div className="max-w-xl w-full">
           <div className="mb-8">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               Contact Us
@@ -150,8 +147,7 @@ export default function ContactPage() {
               )}
             </button>
           </form>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

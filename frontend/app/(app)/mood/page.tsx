@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/app/lib/api";
-import Sidebar from "@/components/Sidebar";
 import { Flame, TrendingUp, BarChart3 } from "lucide-react";
 
 const moods = [
@@ -84,10 +83,8 @@ export default function MoodInputPage() {
   };
 
   return (
-    <div className="flex h-screen text-white">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto px-4 py-10">
-        <div className="max-w-3xl mx-auto">
+    <div className="px-4 py-10">
+      <div className="max-w-3xl mx-auto">
           {/* Mood Input Card */}
           <div className="border border-neutral-800 rounded-2xl p-6 bg-neutral-900/50 mb-8">
             <h1 className="text-3xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -212,8 +209,7 @@ export default function MoodInputPage() {
               )}
             </div>
           )}
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

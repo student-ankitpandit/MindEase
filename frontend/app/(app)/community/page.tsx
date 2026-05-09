@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/app/lib/api";
-import Sidebar from "@/components/Sidebar";
 import {
   Heart,
   Flame,
@@ -425,9 +424,7 @@ export default function CommunityPage() {
   );
 
   return (
-    <div className="flex h-screen text-white">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto px-4 py-8">
+    <div className="px-4 py-8">
         {successMsg && (
           <div className="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
             {successMsg}
@@ -622,7 +619,6 @@ export default function CommunityPage() {
             </div>
           )}
         </div>
-      </main>
     </div>
   );
 }

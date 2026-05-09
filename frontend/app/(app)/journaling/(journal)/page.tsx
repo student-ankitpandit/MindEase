@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/app/lib/api";
-import Sidebar from "@/components/Sidebar";
 import {
   Save,
   Edit2,
@@ -201,9 +200,7 @@ export default function JournalInterface() {
   }
 
   return (
-    <div className="flex h-screen text-white">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto p-4 md:p-8">
+    <div className="p-4 md:p-8">
         {successMessage && (
           <div className="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
             {successMessage}
@@ -516,7 +513,6 @@ export default function JournalInterface() {
             )}
           </div>
         </div>
-      </main>
     </div>
   );
 }

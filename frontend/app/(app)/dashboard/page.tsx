@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/app/lib/api";
-import Sidebar from "@/components/Sidebar";
 import {
   BarChart3,
   BookOpen,
@@ -85,9 +84,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen text-white bg-neutral-950">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto p-6 md:p-8">
+    <div className="p-6 md:p-8">
         {loading ? (
           <div className="flex items-center justify-center h-full min-h-[60vh]">
             <div className="flex flex-col items-center gap-4">
@@ -322,7 +319,6 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : null}
-      </main>
     </div>
   );
 }

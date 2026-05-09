@@ -53,8 +53,8 @@ export default function VoicePage() {
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const transcriptRef = useRef("");
   const conversationIdRef = useRef<string | null>(null);
-  const sendToAIRef = useRef<(text: string) => void>(() => {});
-  const startListeningRef = useRef<() => void>(() => {});
+  const sendToAIRef = useRef<(text: string) => void>(() => { });
+  const startListeningRef = useRef<() => void>(() => { });
 
   const SILENCE_TIMEOUT = 5000;
 
@@ -73,7 +73,7 @@ export default function VoicePage() {
   const stopRecognition = useCallback(() => {
     try {
       recognitionRef.current?.stop();
-    } catch {}
+    } catch { }
     recognitionRef.current = null;
   }, []);
   const stopSpeaking = () => {
@@ -163,7 +163,7 @@ export default function VoicePage() {
           n.onend = r.onend;
           recognitionRef.current = n;
           n.start();
-        } catch {}
+        } catch { }
       }
     };
     recognitionRef.current = r;
@@ -289,15 +289,14 @@ export default function VoicePage() {
         {/* Ambient glow behind orb */}
         {callActive && (
           <div
-            className={`absolute w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${
-              phase === "listening"
+            className={`absolute w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${phase === "listening"
                 ? "bg-blue-600/15"
                 : phase === "thinking"
                   ? "bg-amber-500/10"
                   : phase === "speaking"
                     ? "bg-purple-600/15"
                     : "bg-neutral-800/10"
-            }`}
+              }`}
           />
         )}
 
@@ -309,8 +308,7 @@ export default function VoicePage() {
         >
           {/* Outer ring */}
           <div
-            className={`w-52 h-52 rounded-full flex items-center justify-center transition-all duration-700 ${
-              !callActive
+            className={`w-52 h-52 rounded-full flex items-center justify-center transition-all duration-700 ${!callActive
                 ? "bg-gradient-to-br from-purple-900/30 to-blue-900/30 border border-purple-500/20 hover:border-purple-500/40 hover:scale-105"
                 : phase === "listening"
                   ? "bg-blue-950/40 border-2 border-blue-500/50 shadow-[0_0_80px_rgba(59,130,246,0.15)]"
@@ -319,12 +317,11 @@ export default function VoicePage() {
                     : phase === "speaking"
                       ? "bg-purple-950/40 border-2 border-purple-500/50 shadow-[0_0_80px_rgba(168,85,247,0.15)]"
                       : "bg-neutral-900/50 border border-neutral-700"
-            }`}
+              }`}
           >
             {/* Inner orb */}
             <div
-              className={`w-36 h-36 rounded-full flex items-center justify-center transition-all duration-700 ${
-                !callActive
+              className={`w-36 h-36 rounded-full flex items-center justify-center transition-all duration-700 ${!callActive
                   ? "bg-gradient-to-br from-purple-800/20 to-blue-800/20"
                   : phase === "listening"
                     ? "bg-gradient-to-br from-blue-600/20 to-cyan-600/20"
@@ -333,12 +330,11 @@ export default function VoicePage() {
                       : phase === "speaking"
                         ? "bg-gradient-to-br from-purple-600/20 to-pink-600/20"
                         : "bg-neutral-800/30"
-              }`}
+                }`}
             >
               {/* Core */}
               <div
-                className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 ${
-                  !callActive
+                className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 ${!callActive
                     ? "bg-gradient-to-br from-purple-600/30 to-blue-600/30"
                     : phase === "listening"
                       ? "bg-blue-500/20 animate-pulse"
@@ -347,7 +343,7 @@ export default function VoicePage() {
                         : phase === "speaking"
                           ? "bg-purple-500/20 animate-pulse"
                           : "bg-neutral-700/30"
-                }`}
+                  }`}
               >
                 {!callActive ? (
                   <Mic className="w-8 h-8 text-purple-400/70" />
@@ -359,11 +355,10 @@ export default function VoicePage() {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div
                         key={i}
-                        className={`w-[3px] rounded-full transition-colors duration-300 ${
-                          phase === "listening"
+                        className={`w-[3px] rounded-full transition-colors duration-300 ${phase === "listening"
                             ? "bg-blue-400"
                             : "bg-purple-400"
-                        }`}
+                          }`}
                         style={{
                           height:
                             phase === "listening" || phase === "speaking"
@@ -387,19 +382,17 @@ export default function VoicePage() {
           {callActive && (phase === "listening" || phase === "speaking") && (
             <>
               <div
-                className={`absolute inset-0 rounded-full border animate-ping ${
-                  phase === "listening"
+                className={`absolute inset-0 rounded-full border animate-ping ${phase === "listening"
                     ? "border-blue-500/10"
                     : "border-purple-500/10"
-                }`}
+                  }`}
                 style={{ animationDuration: "2s" }}
               />
               <div
-                className={`absolute -inset-4 rounded-full border animate-ping ${
-                  phase === "listening"
+                className={`absolute -inset-4 rounded-full border animate-ping ${phase === "listening"
                     ? "border-blue-500/5"
                     : "border-purple-500/5"
-                }`}
+                  }`}
                 style={{ animationDuration: "3s" }}
               />
             </>
@@ -417,15 +410,14 @@ export default function VoicePage() {
           ) : (
             <>
               <p
-                className={`text-base font-medium transition-colors duration-300 ${
-                  phase === "listening"
+                className={`text-base font-medium transition-colors duration-300 ${phase === "listening"
                     ? "text-blue-400/80"
                     : phase === "thinking"
                       ? "text-amber-400/80"
                       : phase === "speaking"
                         ? "text-purple-400/80"
                         : "text-neutral-500"
-                }`}
+                  }`}
               >
                 {phase === "listening"
                   ? "Listening"

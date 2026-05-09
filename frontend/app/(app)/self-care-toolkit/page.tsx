@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/app/lib/api";
-import Sidebar from "@/components/Sidebar";
 import {
   Sparkles,
   Bookmark,
@@ -178,10 +177,8 @@ export default function CopingPage() {
     tab === "saved" ? strategies.filter((s) => s.isSaved) : strategies;
 
   return (
-    <div className="flex h-screen text-white">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+    <div className="px-4 py-8">
+      <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-400 to-blue-400 bg-clip-text text-transparent">
@@ -453,8 +450,7 @@ export default function CopingPage() {
               })}
             </div>
           )}
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
