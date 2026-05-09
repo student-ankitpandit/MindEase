@@ -69,11 +69,11 @@ export default function SignupPage() {
         setTimeout(() => router.push("/dashboard"), 0);
       }
 
-      // console.log(`Logged In as ${email}`)
+      // console.log(`Signed Up as ${email}`)
       //<p>Logged In as <strong>{email}</strong></p>
     } catch (e) {
       console.log(e);
-      console.error("Oops, Login failed", e);
+      console.error("Oops, Signup failed", e);
     } finally {
       setIsLoading(false);
     }

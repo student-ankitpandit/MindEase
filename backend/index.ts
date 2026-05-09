@@ -29,11 +29,14 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://mindease-production-24e8.up.railway.app",
+      "https://mind-ease-3bdy.vercel.app",
     ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   }),
 );
+
+app.options("*", cors());
 
 // Body parsers 
 app.use(express.json());
