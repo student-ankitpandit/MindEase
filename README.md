@@ -1,7 +1,5 @@
 # 🧠 MindEase
 
-> An AI-powered mental wellness companion that helps you reflect, express, and feel better — one conversation at a time.
-
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-404D59?style=for-the-badge&logo=express&logoColor=white)
@@ -10,7 +8,9 @@
 ![Gemini AI](https://img.shields.io/badge/Gemini_AI-8E75B2?style=for-the-badge&logo=google&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
----
+<img src="./dashboard.png" alt="MindEase Dashboard" width="100%" height="100%" />
+
+An AI-powered mental wellness companion that helps you reflect, express, and feel better — one conversation at a time.
 
 ## 📖 Overview
 
