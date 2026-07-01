@@ -24,10 +24,11 @@ router.post("/", authMiddleware, async (req, res) => {
         const result = journalingSchema.safeParse(req.body);
 
         if (!result.success) {
+            const errorMsg = result.error.issues.map(i => i.message).join(", ");
             console.log("Validation Error:", result.error.issues);
             return res.status(400).json({
                 success: false,
-                message: "Validation Error",
+                message: errorMsg,
                 errors: result.error.issues,
             });
         }
@@ -163,9 +164,10 @@ router.put("/:id", authMiddleware, async (req, res) => {
         const result = updateSchema.safeParse(req.body);
 
         if (!result.success) {
+            const errorMsg = result.error.issues.map(i => i.message).join(", ");
             return res.status(400).json({
                 success: false,
-                message: "Validation Error",
+                message: errorMsg,
                 errors: result.error.issues,
             });
         }

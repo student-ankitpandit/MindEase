@@ -79,6 +79,10 @@ export default function JournalInterface() {
       alert("Please fill in both title and content");
       return;
     }
+    if (currentJournal.content.trim().length < 10) {
+      alert("Content should be at least 10 characters long");
+      return;
+    }
     try {
       setLoading(true);
       if (editingId) {

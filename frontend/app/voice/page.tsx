@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { apiFetch } from "@/app/lib/api";
+import { apiFetch, BACKEND_URL } from "@/app/lib/api";
 import { Mic, X, Globe, ArrowLeft } from "lucide-react";
 
 type Phase = "idle" | "listening" | "thinking" | "speaking";
@@ -56,7 +56,7 @@ export default function VoicePage() {
   const sendToAIRef = useRef<(text: string) => void>(() => { });
   const startListeningRef = useRef<() => void>(() => { });
 
-  const SILENCE_TIMEOUT = 5000;
+  const SILENCE_TIMEOUT = 2000;
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -84,15 +84,16 @@ export default function VoicePage() {
   };
 
   const speak = useCallback(async (text: string, onDone: () => void) => {
+    console.log("AI speaking:", text);
     try {
-      const response = await fetch("http://localhost:8000/voice/tts", {
+      const response = await fetch(`${BACKEND_URL}/voice/tts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch audio");
+        throw new Error("Failed to fetch audio from TTS endpoint");
       }
 
       const blob = await response.blob();
@@ -117,6 +118,7 @@ export default function VoicePage() {
 
   const startListening = useCallback(() => {
     if (!callActiveRef.current) return;
+    console.log("Starting listening...");
     setPhase("listening");
     setTranscript("");
     setAiText("");
@@ -125,7 +127,10 @@ export default function VoicePage() {
     const SpeechRecognitionCtor =
       (window as SpeechRecognitionWindow).SpeechRecognition ??
       (window as SpeechRecognitionWindow).webkitSpeechRecognition;
-    if (!SpeechRecognitionCtor) return;
+    if (!SpeechRecognitionCtor) {
+      console.error("Speech recognition not supported in this browser");
+      return;
+    }
     const r = new SpeechRecognitionCtor();
     r.continuous = true;
     r.interimResults = true;
@@ -135,23 +140,33 @@ export default function VoicePage() {
       let t = "";
       for (let i = 0; i < e.results.length; i++)
         t += e.results[i][0].transcript;
+      console.log("Transcribed speech:", t);
       setTranscript(t);
       transcriptRef.current = t;
       clearSilenceTimer();
       silenceTimerRef.current = setTimeout(() => {
         stopRecognition();
         const ft = transcriptRef.current.trim();
-        if (ft && callActiveRef.current) sendToAIRef.current(ft);
-        else if (callActiveRef.current) startListening();
+        if (ft && callActiveRef.current) {
+          console.log("User paused speaking. Sending to AI:", ft);
+          sendToAIRef.current(ft);
+        } else if (callActiveRef.current) {
+          startListening();
+        }
       }, SILENCE_TIMEOUT);
     };
     r.onerror = (e) => {
+      console.error("Speech recognition error:", e.error);
       if (e.error === "no-speech" && callActiveRef.current) {
         stopRecognition();
         startListening();
+      } else if ((e.error === "not-allowed" || e.error === "audio-capture") && callActiveRef.current) {
+        endConversation();
+        setAiText(`Speech recognition failed: ${e.error === "not-allowed" ? "Microphone permission denied" : "No microphone found"}. Please enable access.`);
       }
     };
     r.onend = () => {
+      console.log("Speech recognition ended");
       if (callActiveRef.current && !transcriptRef.current.trim()) {
         try {
           const n = new SpeechRecognitionCtor();
@@ -163,7 +178,9 @@ export default function VoicePage() {
           n.onend = r.onend;
           recognitionRef.current = n;
           n.start();
-        } catch { }
+        } catch (err) {
+          console.error("Failed to restart speech recognition:", err);
+        }
       }
     };
     recognitionRef.current = r;
@@ -178,6 +195,7 @@ export default function VoicePage() {
   const sendToAI = useCallback(
     async (text: string) => {
       if (!callActiveRef.current) return;
+      console.log("Sending query to AI:", text);
       setPhase("thinking");
       setTranscript("");
       try {
@@ -202,7 +220,8 @@ export default function VoicePage() {
         speak(resp, () => {
           if (callActiveRef.current) startListeningRef.current();
         });
-      } catch {
+      } catch (err) {
+        console.error("Failed to fetch response from AI:", err);
         if (callActiveRef.current) {
           setPhase("speaking");
           setAiText("I had trouble with that. Let me try again.");
@@ -228,7 +247,7 @@ export default function VoicePage() {
     setTranscript("");
     setAiText("");
     setConversationId(null);
-    const g = "Hi there! I'm MindEase AI. How are you feeling today?";
+    const g = "Hello, I'm MindEase AI. How can I help you today?";
     setPhase("speaking");
     setAiText(g);
     speak(g, () => {

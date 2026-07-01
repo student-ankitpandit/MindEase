@@ -66,9 +66,17 @@ router.post("/signup", async (req, res) => {
         // sendEmail(user.email, "Your ymw-app sign-in code", `Your youth-mental-wellness app sign-in code is ${generatedOtp}`)
         
 
+        const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET!)
+
         return res
         .status(201)
-        .json({success: true, message: "Account created successfully", user: {id: user.id, email: user.email, name: user.name || ""}})
+        .setHeader("Set-Cookie", `token=${token}; HttpOnly; Path=/; SameSite=Lax`)
+        .json({
+            success: true, 
+            message: "Account created successfully", 
+            token: token,
+            user: {id: user.id, email: user.email, name: user.name || ""}
+        })
     } catch (e) {
         console.log("Error: ", e);
         return res
