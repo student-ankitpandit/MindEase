@@ -95,7 +95,7 @@ export default function HomePage() {
         <div className="flex items-center gap-2">
           <Brain className="h-8 w-8 text-teal-400" />
           <span className="font-[var(--font-heading)] text-2xl font-bold text-white tracking-tight">
-            MindEase
+            Mindease AI
           </span>
         </div>
         <div className="flex gap-4 items-center">
